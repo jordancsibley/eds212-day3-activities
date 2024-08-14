@@ -1,0 +1,77 @@
+---
+title: "EDS 221 Day 3 EOD Activity"
+format: html
+---
+
+# Condtional statements 
+
+### Task 1 
+```{r}
+pm2_5 <- 110
+
+if (pm2_5 < 100) {
+  print("Low to moderate risk")
+} else if (pm2_5 >= 100 & pm2_5 < 150) {
+  print("Unhealthy for sensitive groups")
+} else if (pm2_5 >= 150) 
+  print("Health risk present")
+
+```
+
+### Task 2 
+```{r}
+library(stringr)
+species <- "blue whale"
+
+if (str_detect(species, "whale")) {
+  print("You found a whale!")
+}
+```
+
+### Task 3 
+```{r}
+base_burrito <- 6.50
+main_ingredient <- "veggie"
+# veggie = base_burrito
+# chicken = base_burrito + 3
+# steak = base_burrito + 3.25 
+
+burrito_price <- if (main_ingredient == "veggie") {
+  print(base_burrito)
+} else if (main_ingredient == "chicken") {
+  print(base_burrito + 3.0)
+} else if (main_ingredient == "steak") {
+  print(base_burrito + 3.25)
+  print(burrito_price)
+}
+```
+
+
+# For Loops 
+
+### Task 4 
+```{r}
+fish <- c(8, 10, 12, 23)
+# goldfish, tetras, guppies, mollies
+# Write a for loop that iterates through fish, and returns what proportion of total fish in the tank are that species
+
+fish_species <- c("goldfish", "tetras", "guppies", "mollies")
+
+# for loop 
+for (i in seq_along(fish)) {
+  prop_fish <- fish[i] / sum(fish) 
+  print(paste0(fish_species[i],"-",prop_fish))
+}
+
+```
+
+
+### Task 5 
+```{r}
+month.name 
+
+for (i in seq_along(month.name)) {
+    print(paste(month.name[i], "is month", i))
+  }
+
+```
