@@ -2,25 +2,79 @@
 title: "Day 3 EOD activity Part 3"
 author: "Jordan Sibley"
 format: html
+execute: 
+  warning: false
+  message: false
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
 ```{r}
-1 + 1
+
+# set up 
+library(tidyverse)
+library(here)
+library(janitor)
 ```
 
-You can add options to executable code like this 
-
 ```{r}
-#| echo: false
-2 * 2
+# read in data 
+toolik_chem <- read.csv(here::here("data", "2011_Kling_Akchem.csv"), na.strings = c(".", "NA"))  %>% 
+  janitor::clean_names()
+
+# the reason I was having trouble reading this in with the na.strings was because originally I was using read_csv(), which did not work.
+# i have learned that while both read in a file, read_csv reads them in quicker and turns the files into a tibble object. 
+# maybe just in case I should use read.csv in the future to avoid this issue. 
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+
+### create subset w observations from the "Toolik Inlet" site only with the columns ph, DOC, TDN
+```{r}
+
+inlet_chem<- toolik_chem %>%
+  dplyr::select(site, p_h, doc_u_m, tdn_u_m) %>% 
+  filter(site == "Toolik Inlet" | site == "Toolik inlet")
+
+# remember that | means "or". & "and" is not the correct action here as none of the sites are both uppercase and lower case 
+# i am sure there is some way to make sure this issue with capitalizing is fixed, I just happened to catch it from looking at the data frame 
+
+```
+
+### finding the mean value of each column in 'inlet_chem'
+```{r}
+# vector to store the values 
+mean_inlet_chem <- vector(mode = "numeric", length = ncol(inlet_chem))
+
+# for loop 
+for( i in seq_along(inlet_chem)) {
+  mean_inlet <- mean(inlet_chem[[i]], na.rm = TRUE)
+  mean_inlet_chem[[i]] <- mean_inlet 
+}
+print(mean_inlet_chem)
+```
+
+### trying another way to find the mean 
+```{r}
+# creating vector to store length 
+# numeric is a base r function, also creates a numeric vector 
+mean_inlet_chem2 <- numeric(ncol(inlet_chem))
+
+for (i in 1:ncol(inlet_chem)) {
+  mean_inlet_chem2[i] <- mean(inlet_chem[[i]], na.rm = TRUE)
+}
+  print(mean_inlet_chem2)
+
+# gives the same answer as the first try but written a bit more clearly
+```
+
+### Using another method: across()
+```{r}
+inlet_chem %>% 
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+# what i like about this is when the means are printed out it has the name of column above the number, unlike when we did the for loops 
+```
+
+### using purrr::map_df()
+```{r}
+purrr::map(.x = inlet_chem, .f = mean, na.rm = TRUE)
+# gives the same info and is written in the least amount of text 
+```
+
